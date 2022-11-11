@@ -8,6 +8,7 @@ internal static class HostingExtensions
     {
         // uncomment if you want to add a UI
         builder.Services.AddRazorPages();
+        builder.Services.ConfigureCors();
 
         builder.Services.AddIdentityServer(options =>
             {
@@ -34,6 +35,7 @@ internal static class HostingExtensions
 
         // uncomment if you want to add a UI
         app.UseStaticFiles();
+        app.UseCors("CorsPolicy");
         app.UseRouting();
 
         app.UseIdentityServer();

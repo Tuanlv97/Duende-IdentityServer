@@ -3,11 +3,35 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Duende.IdentityServer" Version="6.1.7" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.1.7" />
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.1.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
 
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
+
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
+
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
+
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.4.0" />
+
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.4.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\TeduMicroservices.IDP.Infrastructure\TeduMicroservices.IDP.Infrastructure.csproj" />
+    <ProjectReference Include="..\TeduMicroservices.IDP.Presentation\TeduMicroservices.IDP.Presentation.csproj" />
   </ItemGroup>
 </Project>
