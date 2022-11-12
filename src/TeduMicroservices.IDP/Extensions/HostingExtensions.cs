@@ -1,4 +1,6 @@
 using Serilog;
+using TeduMicroservices.IDP.Infrastructure.Domains;
+using TeduMicroservices.IDP.Infrastructure.Repositories;
 using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
@@ -9,8 +11,8 @@ internal static class HostingExtensions
     {
         // uncomment if you want to add a UI
         builder.Services.AddConfigurationSettings(builder.Configuration);
+        builder.Services.AddAutoMapper(typeof(Program));
         builder.Services.AddRazorPages();
-     
 
         // Add services to the container
         builder.Services.AddScoped<IEmailSender, SmtpMailService>();
@@ -19,6 +21,12 @@ internal static class HostingExtensions
 
         builder.Services.ConfigureIdentity(builder.Configuration);
         builder.Services.ConfigureIdentityServer(builder.Configuration);
+
+        builder.Services.AddTransient(typeof(IUnitOfWork),
+         typeof(UnitOfWork));
+        builder.Services.AddTransient(typeof(IRepositoryBase<,>),
+            typeof(RepositoryBase<,>));
+        builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
         return builder.Build();
     }
