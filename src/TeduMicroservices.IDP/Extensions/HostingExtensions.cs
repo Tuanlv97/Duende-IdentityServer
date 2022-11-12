@@ -1,4 +1,5 @@
 using Serilog;
+using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
 
@@ -7,19 +8,17 @@ internal static class HostingExtensions
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         // uncomment if you want to add a UI
+        builder.Services.AddConfigurationSettings(builder.Configuration);
         builder.Services.AddRazorPages();
+     
+
+        // Add services to the container
+        builder.Services.AddScoped<IEmailSender, SmtpMailService>();
+        builder.Services.ConfigureCookiePolicy();
         builder.Services.ConfigureCors();
 
-        builder.Services.AddIdentityServer(options =>
-            {
-                // https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/api_scopes#authorization-based-on-scopes
-                options.EmitStaticAudienceClaim = true;
-            })
-            .AddInMemoryIdentityResources(Config.IdentityResources)
-            .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Config.Clients)
-            .AddInMemoryApiResources(Config.ApiResources)
-            .AddTestUsers(TestUsers.Users);
+        builder.Services.ConfigureIdentity(builder.Configuration);
+        builder.Services.ConfigureIdentityServer(builder.Configuration);
 
         return builder.Build();
     }
@@ -41,7 +40,7 @@ internal static class HostingExtensions
         app.UseIdentityServer();
 
         // uncomment if you want to add a UI
-        app.UseAuthorization();
+       app.UseAuthorization();
 
         app.UseEndpoints(enpoints =>
         {

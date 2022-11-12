@@ -1,11 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using TeduMicroservices.IDP.Common;
+using TeduMicroservices.IDP.Infrastructure.Entities;
+using TeduMicroservices.IDP.Infrastructure.Persistence;
 
 namespace TeduMicroservices.IDP.Extensions
 {
     public static class ServiceExtensions
     {
+
+        internal static IServiceCollection AddConfigurationSettings(this IServiceCollection services,
+        IConfiguration configuration)
+        {
+            var emailSettings = configuration.GetSection(nameof(SMTPEmailSetting))
+                .Get<SMTPEmailSetting>();
+            services.AddSingleton(emailSettings);
+
+            return services;
+        }
+
         internal static void AddAppConfiguration(this ConfigureHostBuilder host)
         {
             host.ConfigureAppConfiguration((context, config) =>
@@ -76,11 +91,6 @@ namespace TeduMicroservices.IDP.Extensions
             })
             // not recomended for production  - you need to store your key material  somewhere secure
             .AddDeveloperSigningCredential()
-            //.AddInMemoryIdentityResources(Config.IdentityResources)
-            //.AddInMemoryApiScopes(Config.ApiScopes)
-            //.AddInMemoryApiResources(Config.ApiResource)
-            //.AddInMemoryClients(Config.Clients)
-            //.AddTestUsers(TestUsers.Users)
             .AddConfigurationStore(opt =>
             {
                 opt.ConfigureDbContext = c => c.UseSqlServer(connectionString,
@@ -91,9 +101,31 @@ namespace TeduMicroservices.IDP.Extensions
                 opt.ConfigureDbContext = c => c.UseSqlServer(
                     connectionString,
                     buider => buider.MigrationsAssembly("TeduMicroservices.IDP"));
-            });
-            //.AddAspNetIdentity<User>()
-            //.AddProfileService<IdentityProfileService>();
+            })
+            .AddAspNetIdentity<User>()
+            .AddProfileService<IdentityProfileService>();
+        }
+
+        public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("IdentitySqlConnection");
+            services
+                .AddDbContext<TeduIdentityContext>(options => options
+                    .UseSqlServer(connectionString))
+                .AddIdentity<User, IdentityRole>(opt =>
+                {
+                    opt.Password.RequireDigit = false;
+                    opt.Password.RequiredLength = 6;
+                    opt.Password.RequireUppercase = false;
+                    opt.Password.RequireLowercase = false;
+                    opt.User.RequireUniqueEmail = true;
+                    opt.Lockout.AllowedForNewUsers = true;
+                    opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                    opt.Lockout.MaxFailedAccessAttempts = 3;
+                })
+                .AddEntityFrameworkStores<TeduIdentityContext>()
+                //.AddUserStore<TeduUserStore>()
+                .AddDefaultTokenProviders();
         }
 
     }
