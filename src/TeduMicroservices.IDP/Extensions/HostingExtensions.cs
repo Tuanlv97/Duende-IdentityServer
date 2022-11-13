@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using TeduMicroservices.IDP.Infrastructure.Domains;
 using TeduMicroservices.IDP.Infrastructure.Repositories;
@@ -34,8 +35,12 @@ internal static class HostingExtensions
         {
             config.RespectBrowserAcceptHeader = true;
             config.ReturnHttpNotAcceptable = true;
+            config.Filters.Add(new ProducesAttribute("application/json", "text/plain", "text/json"));
         }).AddApplicationPart(typeof(AssemblyReference).Assembly);
 
+
+        builder.Services.ConfigureAuthentication();
+        builder.Services.ConfigureAuthorization();
         builder.Services.ConfigureSwagger(builder.Configuration);
 
         return builder.Build();
@@ -56,21 +61,23 @@ internal static class HostingExtensions
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-          //  c.OAuthClientId("tedu_microservices_swagger");
+            c.OAuthClientId("tedu_microservices_swagger");
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tedu Identity API");
-           // c.DisplayRequestDuration();
+            c.DisplayRequestDuration();
         });
         app.UseRouting();
-        app.UseRouting();
-
+        app.UseMiddleware<ErrorWrappingMiddleware>();
         app.UseIdentityServer();
 
+        //set cookie policy before authentication/authorization setup
+        app.UseCookiePolicy();
+
         // uncomment if you want to add a UI
-       app.UseAuthorization();
+        app.UseAuthorization();
 
         app.UseEndpoints(enpoints =>
         {
-            enpoints.MapDefaultControllerRoute();
+            enpoints.MapDefaultControllerRoute().RequireAuthorization("Bearer");
             enpoints.MapRazorPages().RequireAuthorization();
         });
 

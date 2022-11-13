@@ -125,7 +125,7 @@ namespace TeduMicroservices.IDP.Extensions
                     opt.Lockout.MaxFailedAccessAttempts = 3;
                 })
                 .AddEntityFrameworkStores<TeduIdentityContext>()
-                //.AddUserStore<TeduUserStore>()
+                .AddUserStore<IdentityUserStore>()
                 .AddDefaultTokenProviders();
         }
 
