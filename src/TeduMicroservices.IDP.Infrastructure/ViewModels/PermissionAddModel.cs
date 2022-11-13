@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace TeduMicroservices.IDP.Infrastructure.ViewModels
+namespace TeduMicroservices.IDP.Infrastructure.ViewModels;
+
+public class PermissionAddModel
 {
-    internal class PermissionAddModel
-    {
-    }
+    [Required]
+    public string Function { get; set; }
+    [Required]
+    public string Command { get; set; }
 }

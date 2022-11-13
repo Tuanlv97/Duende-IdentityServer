@@ -9,6 +9,8 @@ namespace TeduMicroservices.IDP.Infrastructure.Persistence
     {
         public IDbConnection Connection => Database.GetDbConnection();
         public TeduIdentityContext(DbContextOptions<TeduIdentityContext> options) : base(options) { }
+
+        public DbSet<Permission> Permissions { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(typeof(TeduIdentityContext).Assembly);

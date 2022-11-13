@@ -11,7 +11,7 @@ public class RepositoryManager : IRepositoryManager
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly TeduIdentityContext _dbContext;
-   // private readonly Lazy<IPermissionRepository> _permissionRepository;
+    private readonly Lazy<IPermissionRepository> _permissionRepository;
     private readonly IMapper _mapper;
 
     public RepositoryManager(TeduIdentityContext dbContext, IUnitOfWork unitOfWork, UserManager<User> userManager,
@@ -23,13 +23,13 @@ public class RepositoryManager : IRepositoryManager
         RoleManager = roleManager;
         _mapper = mapper;
 
-        //_permissionRepository = new Lazy<IPermissionRepository>(() =>
-        //    new PermissionRepository(_dbContext, _unitOfWork, userManager, _mapper));
+        _permissionRepository = new Lazy<IPermissionRepository>(() =>
+            new PermissionRepository(_dbContext, _unitOfWork, userManager, _mapper));
     }
 
     public UserManager<User> UserManager { get; }
     public RoleManager<IdentityRole> RoleManager { get; }
-    // public IPermissionRepository Permission => _permissionRepository.Value;
+    public IPermissionRepository Permission => _permissionRepository.Value;
 
     public Task<int> SaveAsync()
         => _unitOfWork.CommitAsync();
