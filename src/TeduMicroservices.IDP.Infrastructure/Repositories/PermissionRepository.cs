@@ -25,7 +25,7 @@ public class PermissionRepository : RepositoryBase<Permission, long>, IPermissio
         var parameters = new DynamicParameters();
         parameters.Add("@roleId", roleId);
         var result = await QueryAsync<PermissionViewModel>(
-            "Get_Permission_ByRoleId",
+            "Get_Permission_By_RoleId",
             parameters);
 
         return result;
